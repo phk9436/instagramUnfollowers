@@ -1,23 +1,24 @@
-'use client';
 import styles from "./page.module.css";
-import { useSearchParams } from "next/navigation";
-import { clientId, clientSecret, redirectUri } from "./util/apiInfo";
+import OauthClient from "./_components/OauthClient";
+import { getAccessToken } from "./_api/Oauth";
+import { clientId, clientSecret, redirectUri } from "./_util/apiInfo";
 
-export default function Home() {
-  const router = useSearchParams();
-  const accessCode = router.get("code");
+interface IParams {
+  searchParams: { [key: string]: string | undefined }
+}
 
-  const redirectInstaAccess = () => {
-    const authUrl = `https://api.instagram.com/oauth/authorize/?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=user_profile`;
-    window.location.href = authUrl;
+export default function Home({ searchParams }: IParams) {
+  const { code } = searchParams;
+  let token = "";
+
+  if (code) {
+    getAccessToken(clientId, clientSecret, redirectUri, code).then(console.log)
   }
-
-  console.log(accessCode)
 
   return (
     <main className={styles.main}>
       <div className={styles.description}>
-        <button type="button" onClick={redirectInstaAccess}>버튼</button>
+        <OauthClient />
       </div>
     </main>
   );
