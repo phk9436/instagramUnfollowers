@@ -1,24 +1,24 @@
+'use client'
+import { getAccessCode } from '@/app/_util/oauth'
+import { clientId, redirectUri } from '@/app/_util/apiInfo'
 import styles from "./page.module.css";
-import OauthClient from "./_components/OauthClient";
-import { getAccessToken } from "./_api/Oauth";
-import { clientId, clientSecret, redirectUri } from "./_util/apiInfo";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-interface IParams {
-  searchParams: { [key: string]: string | undefined }
-}
+export default function Home() {
+  const router = useRouter();
 
-export default function Home({ searchParams }: IParams) {
-  const { code } = searchParams;
-  let token = "";
-
-  if (code) {
-    getAccessToken(clientId, clientSecret, redirectUri, code).then(console.log)
-  }
+  useEffect(() => {
+    const token = localStorage.getItem('token') || false;
+    if (token) {
+      router.push('/user');
+    }
+  }, []);
 
   return (
     <main className={styles.main}>
       <div className={styles.description}>
-        <OauthClient />
+        <button onClick={() => getAccessCode(clientId, redirectUri)}>인스타 로그인하기</button>
       </div>
     </main>
   );
