@@ -2,23 +2,15 @@
 import React, { useEffect, useState } from 'react'
 import styles from '../../page.module.css'
 import { useRouter } from 'next/navigation';
+import { useRecoilValue } from 'recoil';
+import { oauthDataState } from '@/app/_atoms/util';
 
 function UserPage() {
   const router = useRouter();
 
-  const [token, setToken] = useState('');
-  console.log(token)
+  const oauthData = useRecoilValue(oauthDataState);
+  console.log(oauthData);
 
-  useEffect(() => {
-    const localToken = localStorage.getItem('token') || false;
-    if (!localToken) {
-      router.push('/');
-      return;
-    }
-    if (!token) {
-      setToken(localToken);
-    }
-  }, []);
   return (
     <main className={styles.main}>
       <div className={styles.description}>

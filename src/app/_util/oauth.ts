@@ -25,7 +25,7 @@ export const getAccessToken: ICallOauthApi = async (clientId, clientSecret, redi
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
-    return response.data.access_token;
+    return JSON.stringify(response.data);
   } catch (error) {
     console.error('Error getting access token:', error);
     throw error;

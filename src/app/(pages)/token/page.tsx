@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { clientId, clientSecret, redirectUri } from '@/app/_util/apiInfo';
 import { ICallOauthApi } from '@/app/_types/types';
+import { useRecoilState } from 'recoil';
+import { oauthDataState } from '@/app/_atoms/util';
 
 function TokenPage() {
   const params = useSearchParams();
@@ -12,6 +14,7 @@ function TokenPage() {
   const router = useRouter();
 
   const [isLoaded, setIsLoaded] = useState(false);
+  const [oauthData, setOauthData] = useRecoilState(oauthDataState);
 
   const callOauthApi: ICallOauthApi = async (clientId, clientSecret, redirectUri, accessCode) => {
     const { data } = await axios.post('/api/oauth', {
@@ -20,7 +23,7 @@ function TokenPage() {
       redirectUri,
       accessCode
     });
-    localStorage.setItem('token', data);
+    localStorage.setItem('oauthData', data);
     setIsLoaded(true);
   }
 
@@ -29,14 +32,19 @@ function TokenPage() {
       router.push('/');
       return;
     }
-    const token = localStorage.getItem('token');
-    if (!token && !isLoaded) {
+    const data = localStorage.getItem('oauthData');
+    if (!data && !isLoaded) {
       callOauthApi(clientId, clientSecret, `${redirectUri}token`, accessCode);
       return;
     }
-    router.push('/user');
+    if(data && oauthData === null) {
+      setOauthData(JSON.parse(data));
+    }
+    if(oauthData) {
+      router.push('/user');
+    }
 
-  }, [isLoaded]);
+  }, [isLoaded, oauthData]);
 
   return (
     <main className={styles.main}>
